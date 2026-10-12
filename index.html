@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2447">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Vocab 9">
+  <meta name="description" content="An interactive Grade 9 vocabulary study guide and quiz.">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="icon" href="icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>Vocabulary 9</title>
+  <style>
+    :root {
+      --navy:#0b2447; --navy-2:#153c6b; --ink:#14213d; --paper:#fbf7ee;
+      --cream:#fffdf8; --gold:#f4b942; --teal:#168b8b; --teal-pale:#dff5f1;
+      --coral:#dc6b55; --muted:#667085; --line:#dfe4ea; --good:#18794e; --bad:#b42318;
+      --shadow:0 16px 45px rgba(11,36,71,.12); --radius:24px;
+    }
+    * { box-sizing:border-box; }
+    html { min-height:100%; background:var(--paper); }
+    body { margin:0; min-height:100vh; color:var(--ink); background:
+      radial-gradient(circle at 0 0, rgba(244,185,66,.16), transparent 27rem),
+      radial-gradient(circle at 100% 20%, rgba(22,139,139,.12), transparent 30rem), var(--paper);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing:antialiased; }
+    button, input { font:inherit; }
+    button { cursor:pointer; touch-action:manipulation; }
+    button:focus-visible, input:focus-visible { outline:3px solid rgba(22,139,139,.38); outline-offset:3px; }
+    .shell { min-height:100vh; padding-bottom:calc(28px + env(safe-area-inset-bottom)); }
+    header { position:sticky; top:0; z-index:20; padding:calc(10px + env(safe-area-inset-top)) clamp(16px,4vw,42px) 10px;
+      background:rgba(251,247,238,.9); backdrop-filter:blur(18px); border-bottom:1px solid rgba(20,33,61,.08); }
+    .nav { max-width:1120px; margin:auto; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .brand { display:flex; align-items:center; gap:11px; color:var(--navy); font-weight:850; letter-spacing:-.02em; }
+    .brand img { width:42px; height:42px; border-radius:12px; box-shadow:0 4px 12px rgba(11,36,71,.2); }
+    .nav-actions { display:flex; gap:8px; }
+    .nav-btn { border:0; color:var(--navy); background:transparent; border-radius:999px; padding:10px 14px; font-weight:750; }
+    .nav-btn:hover, .nav-btn.active { background:#e9eef3; }
+    main { width:min(1120px, calc(100% - 32px)); margin:0 auto; }
+    .view { display:none; animation:rise .3s ease; }
+    .view.active { display:block; }
+    @keyframes rise { from { opacity:0; transform:translateY(8px); } }
+    .hero { padding:clamp(44px,8vw,88px) 0 28px; display:grid; grid-template-columns:1.18fr .82fr; gap:clamp(30px,7vw,84px); align-items:center; }
+    .eyebrow { display:inline-flex; gap:8px; align-items:center; color:var(--teal); font-weight:850; text-transform:uppercase; letter-spacing:.12em; font-size:.78rem; }
+    h1 { margin:14px 0 18px; max-width:760px; font-family:Georgia, "Times New Roman", serif; font-size:clamp(3rem,7vw,5.9rem); line-height:.93; color:var(--navy); letter-spacing:-.055em; }
+    h1 em { color:var(--teal); font-style:italic; }
+    .lead { max-width:640px; color:#4d596d; font-size:clamp(1rem,2vw,1.2rem); line-height:1.65; }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+    .primary, .secondary, .text-btn { min-height:48px; border-radius:14px; padding:12px 18px; font-weight:820; border:1px solid transparent; }
+    .primary { color:white; background:var(--navy); box-shadow:0 9px 18px rgba(11,36,71,.18); }
+    .primary:hover { background:var(--navy-2); transform:translateY(-1px); }
+    .secondary { color:var(--navy); background:white; border-color:#d9e0e7; }
+    .secondary:hover { border-color:var(--teal); }
+    .text-btn { background:transparent; color:var(--navy); }
+    .book-stack { min-height:350px; position:relative; display:grid; place-items:center; }
+    .big-card { width:min(350px, 90%); aspect-ratio:4/3; border-radius:26px; background:var(--navy); color:white; padding:32px; box-shadow:var(--shadow); transform:rotate(3deg); display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden; }
+    .big-card:before { content:""; position:absolute; width:190px; height:190px; border-radius:50%; background:var(--teal); opacity:.27; right:-55px; top:-70px; }
+    .big-card:after { content:"V9"; position:absolute; right:22px; bottom:4px; font:700 6rem Georgia,serif; color:rgba(255,255,255,.08); }
+    .big-card .num { font:700 4.7rem/1 Georgia,serif; color:var(--gold); }
+    .big-card .label { font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+    .paper-card { position:absolute; width:min(320px,82%); height:235px; border-radius:22px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); transform:translate(-28px,18px) rotate(-7deg); z-index:-1; }
+    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:16px 0 58px; }
+    .stat { border:1px solid var(--line); background:rgba(255,255,255,.72); border-radius:18px; padding:18px; }
+    .stat strong { display:block; font:700 1.8rem Georgia,serif; color:var(--navy); }
+    .stat span { color:var(--muted); font-size:.9rem; }
+    .section-head { display:flex; align-items:end; justify-content:space-between; gap:18px; padding:42px 0 22px; }
+    .section-head h2 { margin:0; color:var(--navy); font:700 clamp(2rem,5vw,3.3rem)/1 Georgia,serif; letter-spacing:-.035em; }
+    .section-head p { margin:8px 0 0; color:var(--muted); }
+    .search { width:min(360px,100%); min-height:48px; border:1px solid #cfd6df; border-radius:14px; padding:0 16px; background:white; color:var(--ink); }
+    .study-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; padding-bottom:48px; }
+    .term-card { padding:20px; background:rgba(255,255,255,.86); border:1px solid var(--line); border-radius:18px; display:grid; grid-template-columns:1fr auto; gap:10px 14px; box-shadow:0 5px 18px rgba(11,36,71,.05); }
+    .term-card h3 { margin:0; color:var(--navy); font:700 1.38rem Georgia,serif; }
+    .term-card p { margin:0; color:#536072; line-height:1.55; grid-column:1/-1; }
+    .speak { width:42px; height:42px; display:grid; place-items:center; border:0; border-radius:50%; background:var(--teal-pale); color:#087878; font-size:1.1rem; }
+    .quiz-select { padding:54px 0; }
+    .mode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px; }
+    .mode { text-align:left; border:1px solid var(--line); border-radius:22px; background:white; padding:24px; color:var(--ink); box-shadow:0 8px 24px rgba(11,36,71,.06); transition:.18s ease; }
+    .mode:hover { transform:translateY(-3px); border-color:var(--teal); box-shadow:var(--shadow); }
+    .mode .icon { display:grid; place-items:center; width:48px; height:48px; border-radius:14px; background:var(--teal-pale); color:var(--teal); font-weight:900; margin-bottom:36px; }
+    .mode h3 { color:var(--navy); margin:0 0 8px; font-size:1.25rem; }
+    .mode p { color:var(--muted); margin:0; line-height:1.5; }
+    .mode small { display:block; color:var(--teal); margin-top:18px; font-weight:800; }
+    .quiz-wrap { width:min(800px,100%); margin:36px auto; }
+    .quiz-top { display:flex; align-items:center; gap:15px; margin-bottom:26px; }
+    .progress-track { flex:1; height:9px; background:#e1e6eb; border-radius:99px; overflow:hidden; }
+    .progress-fill { width:0; height:100%; background:linear-gradient(90deg,var(--teal),#25b6aa); border-radius:inherit; transition:width .3s; }
+    .progress-label { min-width:90px; text-align:right; color:var(--muted); font-weight:750; font-variant-numeric:tabular-nums; }
+    .question-card { background:white; border:1px solid var(--line); border-radius:var(--radius); padding:clamp(24px,6vw,48px); box-shadow:var(--shadow); }
+    .q-kicker { color:var(--teal); font-weight:850; font-size:.78rem; text-transform:uppercase; letter-spacing:.11em; }
+    .question-card h2 { margin:13px 0 26px; color:var(--navy); font:700 clamp(1.7rem,5vw,2.6rem)/1.15 Georgia,serif; }
+    .definition-box { background:#f4f7f8; border-left:4px solid var(--gold); padding:18px; border-radius:4px 14px 14px 4px; line-height:1.6; margin-bottom:20px; }
+    .answer-input { width:100%; height:56px; border:2px solid #cfd7e0; border-radius:14px; padding:0 17px; font-size:1.12rem; color:var(--navy); background:#fff; }
+    .answer-input:focus { border-color:var(--teal); }
+    .choices { display:grid; gap:11px; }
+    .choice { width:100%; text-align:left; padding:16px 17px; border:1px solid #ccd5df; border-radius:14px; background:white; color:var(--ink); line-height:1.4; }
+    .choice:hover { border-color:var(--teal); background:#f6fbfa; }
+    .choice.selected { border-color:var(--teal); background:var(--teal-pale); box-shadow:0 0 0 2px rgba(22,139,139,.15); }
+    .choice.correct { border-color:var(--good); background:#eaf7f0; color:#0f633e; }
+    .choice.wrong { border-color:var(--bad); background:#fff0ee; color:#8f1d16; }
+    .quiz-actions { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:22px; }
+    .feedback { min-height:28px; margin-top:18px; font-weight:760; line-height:1.45; }
+    .feedback.good { color:var(--good); } .feedback.bad { color:var(--bad); }
+    .match-board { display:grid; grid-template-columns:.8fr 1.2fr; gap:18px; }
+    .match-words, .match-defs { display:grid; align-content:start; gap:10px; }
+    .match-word { border:1px solid #aebcca; background:var(--navy); color:white; border-radius:12px; padding:13px 14px; font-weight:800; text-align:center; cursor:grab; }
+    .match-word.selected { outline:4px solid var(--gold); outline-offset:2px; }
+    .match-word.used { visibility:hidden; }
+    .match-def { min-height:70px; border:2px dashed #bcc6d1; background:#f8faf9; border-radius:14px; padding:13px; color:#4c596a; line-height:1.38; display:flex; align-items:center; }
+    .match-def.over { border-color:var(--teal); background:var(--teal-pale); }
+    .match-def.solved { border-style:solid; border-color:var(--good); background:#eaf7f0; color:#0f633e; }
+    .match-def.shake { animation:shake .25s linear; border-color:var(--bad); }
+    @keyframes shake { 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+    .results { width:min(820px,100%); margin:44px auto; text-align:center; }
+    .score-ring { width:170px; height:170px; margin:18px auto 24px; border-radius:50%; display:grid; place-items:center; background:conic-gradient(var(--teal) var(--score), #e2e7eb 0); position:relative; }
+    .score-ring:after { content:""; position:absolute; inset:13px; border-radius:50%; background:var(--paper); }
+    .score-ring strong { z-index:1; color:var(--navy); font:700 2.5rem Georgia,serif; }
+    .review { margin:28px 0; text-align:left; display:grid; gap:10px; }
+    .review-item { background:white; border:1px solid var(--line); border-radius:14px; padding:15px; }
+    .review-item strong { color:var(--navy); } .review-item span { display:block; color:var(--muted); margin-top:4px; }
+    .empty { grid-column:1/-1; padding:50px; text-align:center; color:var(--muted); }
+    .toast { position:fixed; z-index:100; left:50%; bottom:calc(20px + env(safe-area-inset-bottom)); transform:translate(-50%,20px); opacity:0; pointer-events:none; padding:11px 16px; border-radius:99px; color:white; background:var(--navy); box-shadow:var(--shadow); transition:.2s; }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+    @media (max-width:800px) {
+      .hero { grid-template-columns:1fr; padding-top:44px; } .book-stack { min-height:285px; }
+      .mode-grid { grid-template-columns:1fr; } .mode .icon { margin-bottom:20px; }
+      .section-head { align-items:stretch; flex-direction:column; } .search { width:100%; }
+    }
+    @media (max-width:600px) {
+      main { width:min(100% - 22px,1120px); } .brand span { display:none; }
+      .nav-btn { padding:9px 10px; } .stats { grid-template-columns:1fr; }
+      .study-grid { grid-template-columns:1fr; } .question-card { border-radius:19px; }
+      .match-board { grid-template-columns:1fr; } .match-words { grid-template-columns:repeat(2,1fr); }
+      .quiz-actions { align-items:stretch; flex-direction:column-reverse; } .quiz-actions button { width:100%; }
+    }
+    @media (prefers-reduced-motion:reduce) { *,*:before,*:after { scroll-behavior:auto!important; animation:none!important; transition:none!important; } }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="nav">
+      <button class="brand text-btn" data-go="home" aria-label="Vocabulary 9 home"><img src="icon-192.png" alt=""><span>Vocabulary 9</span></button>
+      <nav class="nav-actions" aria-label="Main navigation">
+        <button class="nav-btn" data-go="study">Study</button>
+        <button class="nav-btn" data-go="modes">Quiz</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="view active">
+      <div class="hero">
+        <div>
+          <span class="eyebrow">English 9 · Vocabulary Lab</span>
+          <h1>Know the word.<br><em>Own the meaning.</em></h1>
+          <p class="lead">Study the complete vocabulary set, hear every word, and practice with spelling, multiple-choice, and touch-friendly matching challenges.</p>
+          <div class="hero-actions">
+            <button class="primary" data-mode="quick">Start a quick quiz</button>
+            <button class="secondary" data-go="study">Open study guide</button>
+          </div>
+        </div>
+        <div class="book-stack" aria-hidden="true">
+          <div class="paper-card"></div>
+          <div class="big-card"><span class="label">Vocabulary set</span><span class="num" id="heroCount">—</span><span>distinct words to master</span></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong>3</strong><span>question styles</span></div>
+        <div class="stat"><strong id="bestScore">—</strong><span>best quick-quiz score</span></div>
+        <div class="stat"><strong>∞</strong><span>practice attempts</span></div>
+      </div>
+    </section>
+
+    <section id="study" class="view">
+      <div class="section-head">
+        <div><h2>Study library</h2><p>Tap the sound button to hear a word pronounced.</p></div>
+        <input id="search" class="search" type="search" placeholder="Search word or meaning…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Search vocabulary">
+      </div>
+      <div id="studyGrid" class="study-grid"></div>
+    </section>
+
+    <section id="modes" class="view quiz-select">
+      <div class="section-head"><div><span class="eyebrow">Choose your challenge</span><h2>Quiz modes</h2><p>Your best score is saved on this device.</p></div></div>
+      <div class="mode-grid">
+        <button class="mode" data-mode="quick"><span class="icon">20</span><h3>Quick Challenge</h3><p>A fresh mix of 20 spelling and meaning questions.</p><small>About 5 minutes →</small></button>
+        <button class="mode" data-mode="full"><span class="icon">ALL</span><h3>Full Vocabulary Test</h3><p>Work through every distinct word, with each appearing once.</p><small>Complete coverage →</small></button>
+        <button class="mode" data-mode="match"><span class="icon">↔</span><h3>Matching Sprint</h3><p>Match 18 words to their definitions in three rounds.</p><small>Drag or tap →</small></button>
+      </div>
+    </section>
+
+    <section id="quiz" class="view">
+      <div class="quiz-wrap">
+        <div class="quiz-top"><button id="quitBtn" class="text-btn">← Exit</button><div class="progress-track"><div id="progressFill" class="progress-fill"></div></div><span id="progressLabel" class="progress-label"></span></div>
+        <div id="questionCard" class="question-card"></div>
+      </div>
+    </section>
+
+    <section id="results" class="view results">
+      <span class="eyebrow">Session complete</span>
+      <h2 id="resultTitle">Strong work.</h2>
+      <div id="scoreRing" class="score-ring" style="--score:0%"><strong id="scoreText">0%</strong></div>
+      <p id="resultCopy" class="lead"></p>
+      <div id="review" class="review"></div>
+      <div class="hero-actions" style="justify-content:center"><button id="retryBtn" class="primary">Try again</button><button class="secondary" data-go="study">Study the list</button></div>
+    </section>
+  </main>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+const WORDS = [
+  ["animated","Energetic, lively, and excited."],
+  ["belligerent","Aggressive, unfriendly, and likely to fight."],
+  ["cordial","Warm, friendly, and polite."],
+  ["disposition","A person's usual personality, reactions, and mood."],
+  ["egotistical","Thinking mostly about oneself."],
+  ["fidelity","Faithfulness or loyalty to a person, promise, or commitment."],
+  ["malice","Hatred and a desire to harm others."],
+  ["naive","Too trusting due to limited experience."],
+  ["patronize","To act as though you are more intelligent or important than someone else."],
+  ["tenacious","Persistent and determined; refusing to quit."],
+  ["versatile","Skilled at many things or able to serve many purposes."],
+  ["credible","Easy to believe or trust."],
+  ["judicious","Wise and careful in making decisions."],
+  ["novice","A beginner at an activity."],
+  ["morale","Confidence, emotional state, and motivation."],
+  ["stature","Social standing or importance."],
+  ["notorious","Well-known for something bad."],
+  ["senile","Describing age-related mental decline, confusion, or forgetfulness."],
+  ["conjecture","A guess based on incomplete or uncertain information."],
+  ["contemplate","To think deeply or gaze intently."],
+  ["formulate","To carefully develop a plan."],
+  ["rationale","A reason or explanation for doing something."],
+  ["concise","Short, clear, and to the point."],
+  ["memorandum","A short reminder or informational note."],
+  ["implicit","Understood without being directly stated."],
+  ["dubious","Causing doubt or disbelief."],
+  ["subtle","Difficult to notice or understand; potentially clever or deep."],
+  ["dispel","To make a thought disappear or scatter a crowd."],
+  ["disentangle","To untie something or work out of a problem."],
+  ["chronicle","A historical record of events in the order they happened."],
+  ["chronological","Arranged in the order events happened."],
+  ["satire","Humorous criticism that exaggerates faults."],
+  ["genre","A category or type of artistic work."],
+  ["conventional","Following commonly accepted customs or practices."],
+  ["norm","A standard or rule for behavior."],
+  ["generic","Not specific; applying to a whole class or group."],
+  ["adversary","An opponent or enemy."],
+  ["adversity","Trouble, bad luck, or difficult times."],
+  ["plight","Trouble or unfortunate circumstances."],
+  ["predicament","A difficult situation that is hard to escape."],
+  ["perilous","Highly dangerous or risky."],
+  ["impending","Approaching soon, often in a threatening or harmful way."],
+  ["impenetrable","Impossible to get through; it may describe an unsolvable problem."],
+  ["malignant","Deadly or seriously harmful."],
+  ["distortion","A change from something's original shape."],
+  ["fruitless","Unsuccessful; producing no results."],
+  ["impoverished","Very poor."],
+  ["deficit","A shortage or lack of something."],
+  ["imposition","An unwanted duty or burden placed on someone."],
+  ["dissension","Disagreement within a group that may cause conflict."],
+  ["arbitrary","Decided without a clear or consistent reason, rule, standard, or system."],
+  ["sanction","Official approval or support; it can also mean a penalty, punishment, or restriction."],
+  ["fluctuate","To rise and fall or change frequently."],
+  ["surge","To increase rapidly or rise suddenly."],
+  ["potency","The power or effectiveness of something."],
+  ["gratification","Satisfaction or pleasure, especially from a job well done."],
+  ["longevity","Lifespan or a particularly long life."],
+  ["luminous","Bright and glowing."],
+  ["mediocre","Average or ordinary in quality."],
+  ["monumental","Very great, impressive, or important."],
+  ["unsurpassed","Better than everything else; the best."],
+  ["unsightly","Ugly or unattractive in appearance."],
+  ["formative","Shaping or influencing development."],
+  ["unquenchable","Impossible to satisfy or get rid of, such as a desire or thirst."],
+  ["moderation","Avoiding excess and maintaining balance."],
+  ["temperance","Self-control and restraint; avoiding excess."],
+  ["laborious","Requiring much time and effort, often tedious."],
+  ["artifact","A human-made object of historical or cultural value."],
+  ["communal","Shared by members of a community."],
+  ["consensus","General agreement within a group."],
+  ["convene","To bring or gather people together for a meeting."],
+  ["contemporary","Existing in the same period or in the present."],
+  ["dominion","Absolute rule or control over a country or territory."],
+  ["fortification","A defensive structure built to protect against attack."],
+  ["regime","A country's system of government or an organization's controlling group."],
+  ["sovereign","Independent and self-governing; a nation that governs itself."],
+  ["statutory","Established, controlled, required, or authorized by law."],
+  ["ratification","Official approval or confirmation of an agreement or measure."],
+  ["predecessor","Someone who held a position before another person, or an ancestor."],
+  ["interim","Temporary, until a permanent arrangement is made."],
+  ["terrestrial","Related to land or planet Earth."],
+  ["traverse","To travel across or through an area."],
+  ["vintage","From an earlier period and valued as an excellent or classic example."],
+  ["constrain","To force someone to do something or prevent them from doing something."],
+  ["rectify","To correct something or make it right again."],
+  ["purge","To get rid of or remove something."],
+  ["nurture","To feed, care for, and help someone grow."],
+  ["viable","Practical and achievable; worth doing."],
+  ["remnant","A small part left after most of something is used or destroyed."]
+].map(([word, definition]) => ({word, definition}));
+
+const $ = sel => document.querySelector(sel);
+const $$ = sel => [...document.querySelectorAll(sel)];
+const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const escapeHTML = value => String(value).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const state = { mode:"quick", questions:[], index:0, correct:0, missed:[], answered:false, selected:null, matchRounds:[], matchRound:0, matchCorrect:0, lastMode:"quick" };
+
+function showView(id){
+  $$('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+  $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.go===id || (id==='quiz'&&b.dataset.go==='modes')));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function speak(word){
+  if(!('speechSynthesis' in window)) return toast('Audio is not supported on this browser.');
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(word); u.lang='en-US'; u.rate=.82;
+  const voices=speechSynthesis.getVoices();
+  u.voice=voices.find(v=>v.lang.startsWith('en') && /Samantha|Ava|Siri|Google US English|Microsoft Aria/i.test(v.name)) || voices.find(v=>v.lang.startsWith('en-US')) || voices.find(v=>v.lang.startsWith('en')) || null;
+  speechSynthesis.speak(u);
+}
+
+function renderStudy(query=''){
+  const q=query.trim().toLowerCase();
+  const found=WORDS.filter(x=>!q || x.word.includes(q) || x.definition.toLowerCase().includes(q));
+  $('#studyGrid').innerHTML=found.length ? found.map(x=>`<article class="term-card"><h3>${escapeHTML(x.word)}</h3><button class="speak" data-speak="${escapeHTML(x.word)}" aria-label="Hear ${escapeHTML(x.word)}">🔊</button><p>${escapeHTML(x.definition)}</p></article>`).join('') : '<p class="empty">No words match that search.</p>';
+}
+
+function distractors(item, key, count=3){
+  return shuffle(WORDS.filter(x=>x.word!==item.word)).slice(0,count).map(x=>x[key]);
+}
+
+function startQuiz(mode){
+  state.mode=state.lastMode=mode; state.index=0; state.correct=0; state.missed=[]; state.answered=false; state.selected=null;
+  if(mode==='match'){ startMatching(); return; }
+  const pool=mode==='full' ? shuffle(WORDS) : shuffle(WORDS).slice(0,Math.min(20,WORDS.length));
+  state.questions=pool.map((item,i)=>({item,type:['spell','chooseDefinition','chooseWord'][i%3]}));
+  showView('quiz'); renderQuestion();
+}
+
+function renderQuestion(){
+  const q=state.questions[state.index], {item,type}=q; state.answered=false; state.selected=null;
+  updateProgress(state.index,state.questions.length);
+  let body='';
+  if(type==='spell'){
+    body=`<span class="q-kicker">Spell the word</span><h2>Which vocabulary word matches this definition?</h2><div class="definition-box">${escapeHTML(item.definition)}</div><form id="answerForm"><input id="answerInput" class="answer-input" type="text" aria-label="Type the vocabulary word" placeholder="Type the word…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></form>`;
+  } else if(type==='chooseDefinition'){
+    const options=shuffle([item.definition,...distractors(item,'definition')]);
+    body=`<span class="q-kicker">Choose the meaning</span><h2>What does <em>${escapeHTML(item.word)}</em> mean?</h2><div class="choices">${options.map(v=>`<button class="choice" data-value="${escapeHTML(v)}">${escapeHTML(v)}</button>`).join('')}</div>`;
+  } else {
+    const options=shuffle([item.word,...distractors(item,'word')]);
+    body=`<span class="q-kicker">Choose the word</span><h2>Which word matches this definition?</h2><div class="definition-box">${escapeHTML(item.definition)}</div><div class="choices">${options.map(v=>`<button class="choice" data-value="${escapeHTML(v)}">${escapeHTML(v)}</button>`).join('')}</div>`;
+  }
+  $('#questionCard').innerHTML=body+`<div id="feedback" class="feedback" role="status" aria-live="polite"></div><div class="quiz-actions"><button class="text-btn" data-hear="${escapeHTML(item.word)}">🔊 Hear word</button><button id="checkBtn" class="primary">Check answer</button></div>`;
+  if(type==='spell') setTimeout(()=>$('#answerInput')?.focus(),100);
+}
+
+function selectChoice(btn){
+  if(state.answered) return;
+  $$('.choice').forEach(x=>x.classList.remove('selected')); btn.classList.add('selected'); state.selected=btn.dataset.value;
+}
+
+function checkAnswer(){
+  if(state.answered){ nextQuestion(); return; }
+  const q=state.questions[state.index], {item,type}=q;
+  const given=type==='spell' ? ($('#answerInput')?.value||'').trim().toLowerCase() : state.selected;
+  const expected=type==='chooseDefinition' ? item.definition : item.word;
+  if(!given) { toast('Choose or type an answer first.'); return; }
+  const good=given===expected.toLowerCase?.() || given===expected;
+  state.answered=true;
+  if(good) state.correct++; else state.missed.push(item);
+  if(type!=='spell') $$('.choice').forEach(btn=>{ if(btn.dataset.value===expected) btn.classList.add('correct'); else if(btn.classList.contains('selected')) btn.classList.add('wrong'); btn.disabled=true; });
+  else { const input=$('#answerInput'); input.disabled=true; input.style.borderColor=good?'var(--good)':'var(--bad)'; }
+  const feedback=$('#feedback'); feedback.className='feedback '+(good?'good':'bad'); feedback.textContent=good ? `Correct — ${item.word}.` : `Not quite. The answer is “${item.word}.”`;
+  const check=$('#checkBtn'); check.textContent=state.index===state.questions.length-1?'See results':'Next question';
+  speak(item.word);
+}
+
+function nextQuestion(){
+  if(state.index>=state.questions.length-1){ finishQuiz(); return; }
+  state.index++; renderQuestion();
+}
+
+function updateProgress(current,total){
+  $('#progressFill').style.width=`${Math.round((current/total)*100)}%`;
+  $('#progressLabel').textContent=`${Math.min(current+1,total)} / ${total}`;
+}
+
+function startMatching(){
+  const chosen=shuffle(WORDS).slice(0,Math.min(18,WORDS.length));
+  state.matchRounds=[chosen.slice(0,6),chosen.slice(6,12),chosen.slice(12,18)]; state.matchRound=0; state.matchCorrect=0; state.missed=[];
+  showView('quiz'); renderMatchRound();
+}
+
+function renderMatchRound(){
+  const round=state.matchRounds[state.matchRound]; state.selected=null;
+  updateProgress(state.matchRound,state.matchRounds.length);
+  $('#progressLabel').textContent=`Round ${state.matchRound+1} / ${state.matchRounds.length}`;
+  $('#questionCard').innerHTML=`<span class="q-kicker">Matching sprint</span><h2>Match each word to its definition.</h2><p style="color:var(--muted);margin-top:-14px">Drag a word onto its meaning, or tap a word and then a meaning.</p><div class="match-board"><div class="match-words">${shuffle(round).map(x=>`<button draggable="true" class="match-word" data-word="${escapeHTML(x.word)}">${escapeHTML(x.word)}</button>`).join('')}</div><div class="match-defs">${shuffle(round).map(x=>`<div class="match-def" data-answer="${escapeHTML(x.word)}" tabindex="0" role="button">${escapeHTML(x.definition)}</div>`).join('')}</div></div><div id="feedback" class="feedback" role="status" aria-live="polite"></div>`;
+  bindMatching();
+}
+
+function bindMatching(){
+  $$('.match-word').forEach(word=>{
+    word.addEventListener('click',()=>{ if(word.classList.contains('used')) return; $$('.match-word').forEach(x=>x.classList.remove('selected')); word.classList.add('selected'); state.selected=word.dataset.word; });
+    word.addEventListener('dragstart',e=>{ state.selected=word.dataset.word; e.dataTransfer.setData('text/plain',word.dataset.word); e.dataTransfer.effectAllowed='move'; });
+  });
+  $$('.match-def').forEach(def=>{
+    def.addEventListener('click',()=>attemptMatch(state.selected,def));
+    def.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();attemptMatch(state.selected,def);} });
+    def.addEventListener('dragover',e=>{e.preventDefault();def.classList.add('over');});
+    def.addEventListener('dragleave',()=>def.classList.remove('over'));
+    def.addEventListener('drop',e=>{e.preventDefault();def.classList.remove('over');attemptMatch(e.dataTransfer.getData('text/plain'),def);});
+  });
+}
+
+function attemptMatch(word,def){
+  if(!word || def.classList.contains('solved')) { if(!word) toast('Tap a word first.'); return; }
+  if(word===def.dataset.answer){
+    def.classList.add('solved'); def.innerHTML=`<strong>${escapeHTML(word)}</strong>&nbsp;—&nbsp;${def.innerHTML}`;
+    const source=$(`.match-word[data-word="${CSS.escape(word)}"]`); source?.classList.add('used'); state.matchCorrect++; state.selected=null; speak(word);
+    if($$('.match-def:not(.solved)').length===0) setTimeout(nextMatchRound,500);
+  } else {
+    def.classList.remove('shake'); void def.offsetWidth; def.classList.add('shake');
+    const item=WORDS.find(x=>x.word===word); if(item && !state.missed.some(x=>x.word===word)) state.missed.push(item);
+  }
+}
+
+function nextMatchRound(){
+  if(state.matchRound>=state.matchRounds.length-1){ finishQuiz(true); return; }
+  state.matchRound++; renderMatchRound();
+}
+
+function finishQuiz(isMatch=false){
+  const total=isMatch ? state.matchRounds.flat().length : state.questions.length;
+  const matchMisses=[...new Set(state.missed.map(x=>x.word))].length;
+  const correct=isMatch ? Math.max(0,total-matchMisses) : state.correct;
+  const pct=Math.round(correct/total*100);
+  if(state.mode==='quick'){ const best=Math.max(pct,Number(localStorage.getItem('vocab9-best')||0)); localStorage.setItem('vocab9-best',best); updateBest(); }
+  $('#scoreRing').style.setProperty('--score',`${pct}%`); $('#scoreText').textContent=`${pct}%`;
+  $('#resultTitle').textContent=pct>=90?'Excellent command.':pct>=75?'Strong work.':pct>=60?'Good foundation.':'Time to review.';
+  $('#resultCopy').textContent=`You scored ${correct} out of ${total}. ${state.missed.length ? 'Review the words below, then give it another run.' : 'You cleared this set without a miss.'}`;
+  const uniqueMissed=[...new Map(state.missed.map(x=>[x.word,x])).values()];
+  $('#review').innerHTML=uniqueMissed.length ? `<h3>Review these words</h3>${uniqueMissed.map(x=>`<div class="review-item"><strong>${escapeHTML(x.word)}</strong><span>${escapeHTML(x.definition)}</span></div>`).join('')}` : '';
+  showView('results');
+}
+
+function updateBest(){ const best=localStorage.getItem('vocab9-best'); $('#bestScore').textContent=best?`${best}%`:'—'; }
+function toast(msg){ const el=$('#toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>el.classList.remove('show'),1800); }
+
+document.addEventListener('click',e=>{
+  const go=e.target.closest('[data-go]'); if(go){showView(go.dataset.go);return;}
+  const mode=e.target.closest('[data-mode]'); if(mode){startQuiz(mode.dataset.mode);return;}
+  const sound=e.target.closest('[data-speak],[data-hear]'); if(sound){speak(sound.dataset.speak||sound.dataset.hear);return;}
+  const choice=e.target.closest('.choice'); if(choice){selectChoice(choice);return;}
+  if(e.target.closest('#checkBtn')) checkAnswer();
+});
+document.addEventListener('submit',e=>{ if(e.target.id==='answerForm'){e.preventDefault();checkAnswer();} });
+$('#search').addEventListener('input',e=>renderStudy(e.target.value));
+$('#quitBtn').addEventListener('click',()=>{ if(confirm('Exit this quiz? Your current progress will be cleared.')) showView('modes'); });
+$('#retryBtn').addEventListener('click',()=>startQuiz(state.lastMode));
+
+$('#heroCount').textContent=WORDS.length;
+renderStudy(); updateBest();
+</script>
+</body>
+</html>
